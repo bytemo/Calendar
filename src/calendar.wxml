@@ -1,0 +1,52 @@
+<!--components/calendar/calendar.wxml-->
+
+<!-- 顶部栏 -->
+	<view class="topBar flex justify-between align-center padding-tb-sm" style="{{utils.renderColor(topbarBgColor ? topbarBgColor : '#1E90FF')}}">
+		<view class="padding-lr-sm" hover-class="hover" hover-start-time="10" hover-stay-time="100" bindtap="changeMonth" id="prev">
+			<text class="cuIcon-back"></text>{{((month + 10) % 12) + 1}}月
+		</view>
+
+		<view hover-class="hover" hover-start-time="10" hover-stay-time="100">
+			<picker mode="date" value="{{currentDate}}" bindchange="onDateChange">{{year}} 年 {{month}} 月</picker>
+		</view>
+
+		<view class="padding-lr-sm" hover-class="hover" hover-start-time="10" hover-stay-time="100" bindtap="changeMonth" id="next">
+			{{(month % 12) + 1}}月<text class="cuIcon-right"></text>
+		</view>
+	</view>
+
+	<!-- 星期条 -->
+	<view class="weekBar text-center padding-bottom-xs flex text-lg text-bold" style="{{utils.renderColor(topbarBgColor ? topbarBgColor : '#1E90FF')}}">
+		<text class="day" wx:for="{{weekBarData}}">{{item}}</text>
+	</view>
+
+	<!-- 日历内容区 -->
+	<swiper style="height:1px; min-height:{{width * 0.78}}px;" circular="true" current="{{currentItem}}" bindchange="changeMonth" id="swipe">
+		<swiper-item wx:for="{{dateList}}" wx:for-item="items" class="calendar text-center text-lg" style="{{utils.renderColor(bgColor ? bgColor : '#f8f8f8')}}">
+			<view class="day flex justify-center align-center {{item.type}}" wx:for="{{items}}" data-date="{{item.date}}" data-type="{{item.type}}" bindtap="onDateTap" hover-class="hover" hover-start-time="10" hover-stay-time="60">
+				<view class="dateBlock padding-tb-sm margin-lr-xs round period-{{item.periodType}}" style="width:{{blockWidth}}px; {{item.periodType ? ('width:100%;' + utils.renderColor(periodColor ? periodColor : '#f37b1d')) : ''}}; {{(currentSelected == item.date) ? ((item.date == today ? utils.renderColor(todayColor ? todayColor : '#1E90FF') : 'border: 1px #aaa solid; ')) : 'margin:1px 0;'}};">{{item.text}}</view>
+				<view class="todayFlag round" style="{{utils.renderColor(todayColor ? todayColor : '#1E90FF')}} {{item.mark ? utils.renderColor(markColor ? markColor : '#e54d42') : ''}}" wx:if="{{item.date == today || item.mark}}"></view>
+			</view>
+		</swiper-item>
+	</swiper>
+
+<wxs module="utils">
+	function renderColor(color) {
+		if (color.length < 7) return
+
+		var r = parseInt("0x" + color.slice(1, 3))
+		var g = parseInt("0x" + color.slice(3, 5))
+		var b = parseInt("0x" + color.slice(5, 7))
+		if (r * 0.299 + g * 0.578 + b * 0.114 >= 192) {
+			//浅色
+			return 'background-color:' + color + ';color:black;'
+		} else {
+			//深色
+			return 'background-color:' + color + ';color:white;'
+		}
+	}
+
+	module.exports = {
+		renderColor: renderColor
+	};
+</wxs>
